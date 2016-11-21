@@ -1,0 +1,6 @@
+/.idea
+/vendor
+/storage/logs
+/*.lock
+/config
+/lib/Client/Client.php

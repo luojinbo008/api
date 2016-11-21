@@ -1,0 +1,7 @@
+{
+    "require": {
+        "slim/slim": "^3.5",
+        "monolog/monolog": "^1.18",
+        "catfan/Medoo": "^1.0"
+    }
+}

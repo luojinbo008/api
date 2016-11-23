@@ -4,6 +4,7 @@ $interfaceList['setting'] = include __DIR__ . '/../app/Args/setting.php';
 $interfaceList['customer'] = include __DIR__ . '/../app/Args/customer.php';
 $interfaceList['order'] = include __DIR__ . '/../app/Args/order.php';
 $interfaceList['wechat'] = include __DIR__ . '/../app/Args/wechat.php';
+$interfaceList['content'] = include __DIR__ . '/../app/Args/content.php';
 
 class Request
 {

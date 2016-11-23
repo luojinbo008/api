@@ -99,3 +99,4 @@ require APP_PATH . "/app/Routes/customer.php";
 require APP_PATH . "/app/Routes/order.php";
 require APP_PATH . "/app/Routes/wechat.php";
 require APP_PATH . "/app/Routes/notify.php";
+require APP_PATH . "/app/Routes/content.php";

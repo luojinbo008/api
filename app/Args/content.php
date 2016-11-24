@@ -11,6 +11,11 @@ return [
         'name' => "获得博客分类列表",
         'type' => 'GET',
         'args' => [
+            'filter_name'   => 'string',
+            'sort'          => 'string',
+            'order'         => 'string',
+            'start'         => 'int',
+            'limit'         => 'int',
         ],
     ],
 ];

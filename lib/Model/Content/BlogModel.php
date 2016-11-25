@@ -27,8 +27,8 @@ class BlogModel extends BaseModel
         $sql = "SELECT cp.blog_category_id AS blog_category_id, 
             GROUP_CONCAT(c1.name ORDER BY cp.level SEPARATOR '&nbsp;&nbsp;&gt;&nbsp;&nbsp;') AS name, 
             c1.parent_id, c1.sort_order FROM mcc_blog_category_path cp 
-            LEFT JOIN mcc_blog_category c1 ON (cp.blog_category_id = c1.blog_category_id) 
-            LEFT JOIN mcc_blog_category c2 ON (cp.path_id = c2.blog_category_id) "
+            LEFT JOIN mcc_blog_category c1 ON (cp.path_id = c1.blog_category_id) 
+            LEFT JOIN mcc_blog_category c2 ON (cp.blog_category_id = c2.blog_category_id) "
             . " WHERE cp.appid = " . $appid;
 
         if (!empty($filter_name)) {
@@ -56,15 +56,14 @@ class BlogModel extends BaseModel
         } else {
             $sql .= " ASC";
         }
-        if (isset($data['start']) || isset($data['limit'])) {
-
-            if ($data['start'] < 0) {
-                $data['start'] = 0;
+        if (!empty($start) || !empty($limit)) {
+            if ($start < 0) {
+                $start = 0;
             }
-            if ($data['limit'] < 1) {
-                $data['limit'] = 20;
+            if ($limit < 1) {
+                $limit = 20;
             }
-            $sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
+            $sql .= " LIMIT " . (int)$start . "," . (int)$limit;
         }
         $list = $this->db->query($sql)->fetchAll(\PDO::FETCH_ASSOC);
         return ["count" => $count, "list" => $list];
@@ -163,10 +162,15 @@ class BlogModel extends BaseModel
     public function getCategory($appid, $blog_category_id)
     {
         $sql = "SELECT DISTINCT *, 
-                  (SELECT GROUP_CONCAT(c.name ORDER BY level SEPARATOR '&nbsp;&nbsp;&gt;&nbsp;&nbsp;') 
+                  (
+                      SELECT GROUP_CONCAT(c1.name ORDER BY level SEPARATOR '&nbsp;&nbsp;&gt;&nbsp;&nbsp;') 
                       FROM mcc_blog_category_path cp 
-                      WHERE cp.blog_category_id = c.blog_category_id AND cp.appid = " . (int)$appid . "
-                      GROUP BY cp.blog_category_id) AS path
+			          LEFT JOIN mcc_blog_category c1 ON (cp.path_id = c1.blog_category_id AND cp.blog_category_id != cp.path_id)  
+                      WHERE cp.path_id = c1.blog_category_id AND cp.path_id = c1.blog_category_id AND 
+                      cp.blog_category_id != cp.path_id AND cp.blog_category_id = " . (int)$blog_category_id  . "
+                      AND cp.appid = " . (int)$appid . "
+                      GROUP BY cp.blog_category_id
+                  ) AS path
                 FROM mcc_blog_category c 
                 LEFT JOIN mcc_blog_category c2 ON (c.blog_category_id = c2.blog_category_id AND c2.appid = " . (int)$appid . ") 
                 WHERE c.blog_category_id = '" . (int)$blog_category_id . "' AND c.appid = " . $appid;

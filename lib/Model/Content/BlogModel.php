@@ -215,12 +215,6 @@ class BlogModel extends BaseModel
                     ]
                 ]);
             }
-            $db->delete('mcc_blog_category', [
-                'AND'   => [
-                    'appid'             => (int)$appid,
-                    'blog_category_id'  => (int)$blog_category_id,
-                ]
-            ]);
             $rows = $db->select('mcc_blog_category_path', '*', [
                 'AND' => [
                     'appid'     => (int)$appid,

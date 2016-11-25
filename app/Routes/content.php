@@ -7,3 +7,4 @@
  */
 $controller = '\\App\\Controllers\\ContentController';
 $app->get('/content/getBlogCategoryList.json', $controller . ':getBlogCategoryList');
+$app->post('/content/addBlogCategory.json', $controller . ':addBlogCategory');

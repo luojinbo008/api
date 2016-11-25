@@ -18,4 +18,20 @@ return [
             'limit'         => 'int',
         ],
     ],
+    'addBlogCategory.json'  => [
+        'name' => "新增博客分类",
+        'type' => 'POST',
+        'args' => [
+            'blog_category_name'                => 'string|empty',
+            'blog_category_meta_title'          => 'string|empty',
+            'blog_category_description'         => 'string',
+            'blog_category_meta_description'    => 'string',
+            'blog_category_meta_keyword'        => 'string',
+            'parent_id'                         => 'int',
+            'blog_category_store'               => 'array',
+            'image'                             => 'string',
+            'sort_order'                        => 'int',
+            'status'                            => 'int',
+        ],
+    ]
 ];

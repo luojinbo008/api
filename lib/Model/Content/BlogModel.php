@@ -161,6 +161,7 @@ class BlogModel extends BaseModel
      */
     public function getCategory($appid, $blog_category_id)
     {
+
         $sql = "SELECT DISTINCT *, 
                   (
                       SELECT GROUP_CONCAT(c1.name ORDER BY level SEPARATOR '&nbsp;&nbsp;&gt;&nbsp;&nbsp;') 
@@ -192,5 +193,144 @@ class BlogModel extends BaseModel
             ]
         ]);
         return array_column($list, 'store_id');
+    }
+
+    /**
+     * 更新博客分类
+     * @param $appid
+     * @param $blog_category_id
+     * @param $data
+     * @param $blog_category_store
+     */
+    public function updateCategory($appid, $blog_category_id, $data, $blog_category_store)
+    {
+        $db = $this->db;
+        $data['date_modified'] = date('Y-m-d H:i:s', CURRENT_TIME);
+        $db->action(function($db) use ($appid, $blog_category_id, $data, $blog_category_store) {
+            if (!empty($data)) {
+                $db->update('mcc_blog_category', $data, [
+                    'AND' => [
+                        'appid'             => (int)$appid,
+                        'blog_category_id'  => (int)$blog_category_id,
+                    ]
+                ]);
+            }
+            $db->delete('mcc_blog_category', [
+                'AND'   => [
+                    'appid'             => (int)$appid,
+                    'blog_category_id'  => (int)$blog_category_id,
+                ]
+            ]);
+            $rows = $db->select('mcc_blog_category_path', '*', [
+                'AND' => [
+                    'appid'     => (int)$appid,
+                    'path_id'   => (int)$blog_category_id
+                ],
+                'ORDER' => [
+                    'level' => 'ASC'
+                ]
+            ]);
+            if ($rows) {
+                foreach ($rows as $blog_category_path) {
+                    $db->delete('mcc_blog_category_path', [
+                        'AND' => [
+                            'appid'             => (int)$appid,
+                            'blog_category_id'  => (int)$blog_category_path['blog_category_id'],
+                            'level[<]'          => (int)$blog_category_path['level']
+                        ],
+                    ]);
+                    $path = [];
+                    $rows2 = $db->select('mcc_blog_category_path', '*', [
+                        'AND' => [
+                            'appid'             => (int)$appid,
+                            'blog_category_id'  => (int)$data['parent_id'],
+                        ],
+                        'ORDER' => [
+                            'level' => 'ASC'
+                        ]
+                    ]);
+                    foreach ($rows2 as $result) {
+                        $path[] = $result['path_id'];
+                    }
+                    $rows3 = $db->select('mcc_blog_category_path', '*', [
+                        'AND' => [
+                            'appid'             => (int)$appid,
+                            'blog_category_id'  => (int)$blog_category_path['blog_category_id'],
+                        ],
+                        'ORDER' => [
+                            'level' => 'ASC'
+                        ]
+                    ]);
+
+                    foreach ($rows3 as $result) {
+                        $path[] = $result['path_id'];
+                    }
+
+                    $level = 0;
+                    foreach ($path as $path_id) {
+                        $db->replace('mcc_blog_category_path', [
+                            'blog_category_id'  => (int)$blog_category_path['blog_category_id'],
+                            'path_id'           => (int)$path_id,
+                            'level'             => (int)$level,
+                            'appid'             => (int)$appid
+                        ]);
+                        $level++;
+                    }
+                }
+            } else {
+                $db->delete('mcc_blog_category_path', [
+                    'AND' => [
+                        'appid'             => (int)$appid,
+                        'blog_category_id'  => (int)$blog_category_id ,
+                    ],
+                ]);
+
+                $level = 0;
+                $rows = $db->select('mcc_blog_category_path', '*', [
+                    'AND' => [
+                        'appid'             => (int)$appid,
+                        'blog_category_id'  => (int)$data['parent_id']
+                    ],
+                    'ORDER' => [
+                        'level' => 'ASC'
+                    ]
+                ]);
+                foreach ($rows as $result) {
+                    $db->insert('mcc_blog_category_path', [
+                        'appid'             => (int)$appid,
+                        'blog_category_id'  => (int)$blog_category_id,
+                        'path'              => (int)$result['path_id'],
+                        'level'             => (int)$level
+                    ]);
+                    $level++;
+                }
+
+                $db->replace('mcc_blog_category_path', [
+                    'blog_category_id'  => (int)$blog_category_id,
+                    'path_id'           => (int)$blog_category_id,
+                    'level'             => (int)$level,
+                    'appid'             => (int)$appid
+                ]);
+            }
+            $db->delete('mcc_blog_category_to_store', [
+                'AND'   => [
+                    'appid'             => (int)$appid,
+                    'blog_category_id'  => (int)$blog_category_id
+                ]
+            ]);
+
+            if (!empty($blog_category_store)) {
+
+                foreach ($blog_category_store as $store_id) {
+                    $db->insert('mcc_blog_category_to_store', [
+                        'appid'             => (int)$appid,
+                        'blog_category_id'  => (int)$blog_category_id,
+                        'store_id'          => (int)$store_id,
+                    ]);
+                }
+            }
+            return true;
+        });
+        return true;
     }
 }

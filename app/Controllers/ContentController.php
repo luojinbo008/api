@@ -105,4 +105,63 @@ class ContentController extends BaseController
             ]
         ]);
     }
+
+    /**
+     * 编辑博客分类
+     * @param Request $request
+     * @param Response $response
+     */
+    public function editBlogCategory(Request $request, Response $response)
+    {
+        $query = $request->getParsedBody();
+        $blog_category_id = (int)$query['blog_category_id'];
+        $data = [];
+        if (!empty($query['blog_category_name'])) {
+            $data['blog_category_name'] = $query['blog_category_name'];
+        }
+        if (!empty($query['blog_category_meta_title'])) {
+            $data['blog_category_meta_title'] = $query['blog_category_meta_title'];
+        }
+        if (!empty($query['blog_category_description'])) {
+            $data['blog_category_description'] = $query['blog_category_description'];
+        }
+        if (!empty($query['blog_category_meta_description'])) {
+            $data['blog_category_meta_description'] = $query['blog_category_meta_description'];
+        }
+        if (!empty($query['blog_category_meta_keyword'])) {
+            $data['blog_category_meta_keyword'] = $query['blog_category_meta_keyword'];
+        }
+        if (!empty($query['parent_id'])) {
+            $data['parent_id'] = $query['parent_id'];
+        }
+        if (!empty($query['image'])) {
+            $data['image'] = $query['image'];
+        }
+        if (!empty($query['sort_order'])) {
+            $data['sort_order'] = $query['sort_order'];
+        }
+        if (!empty($query['status'])) {
+            $data['status'] = $query['status'];
+        }
+        $blog_category_store = [];
+        if (!empty($query['blog_category_store'])) {
+            $blog_category_store = $query['blog_category_store'];
+        }
+
+        $model = new BlogModel();
+        $status = $model->updateCategory($this->appid, $blog_category_id, $data, $blog_category_store);
+
+        if (!$status) {
+            return $response->withJson([
+                "code"      => 1,
+                "message"   => "编辑博客分类失败！",
+                "data"      => []
+            ]);
+        }
+        return $response->withJson([
+            "code"      => 0,
+            "message"   => "编辑博客分类成功！",
+            "data"      => []
+        ]);
+    }
 }

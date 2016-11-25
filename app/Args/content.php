@@ -33,5 +33,13 @@ return [
             'sort_order'                        => 'int',
             'status'                            => 'int',
         ],
+    ],
+    'getBlogCategory.json'   => [
+        'name' => "获得博客分类信息",
+        'type' => 'GET',
+        'args' => [
+            'blog_category_id'  => 'int|empty',
+            'get_store'         => 'int',
+        ],
     ]
 ];

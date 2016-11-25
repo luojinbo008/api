@@ -71,4 +71,38 @@ class ContentController extends BaseController
             ]
         ]);
     }
+
+    /**
+     * 获得博客分类信息
+     * @param Request $request
+     * @param Response $response
+     * @return mixed
+     */
+    public function getBlogCategory(Request $request, Response $response)
+    {
+        $data = $request->getQueryParams();
+        $blog_category_id = $data['blog_category_id'];
+        $get_store = isset($data['get_store']) ? (int)$data['get_store'] : 0;
+        $model = new BlogModel();
+        $info = $model->getCategory($this->appid, $blog_category_id);
+        if (!$info) {
+            return $response->withJson([
+                "code"      => 1,
+                "message"   => "获得博客分类失败！",
+                "data"      => [
+                ]
+            ]);
+        }
+        if ($get_store) {
+            $store_ids = $model->getCategoryToStore($this->appid, $blog_category_id);
+            $info['store_ids'] = $store_ids;
+        }
+        return $response->withJson([
+            "code"      => 0,
+            "message"   => "获得博客分类成功！",
+            "data"      => [
+                'info' => $info
+            ]
+        ]);
+    }
 }

@@ -96,18 +96,18 @@ class BlogModel extends BaseModel
             $sort_order, $status, &$blog_category_id
         ) {
             $blog_category_id = $db->insert('mcc_blog_category', [
-                'appid' => (int)$appid,
-                'parent_id' => (int)$parent_id,
-                'sort_order' => (int)$sort_order,
-                'status' => (int)$status,
-                'image' => $image,
-                'date_modified' => date('Y-m-d H:i:s', CURRENT_TIME),
-                'date_added' => date('Y-m-d H:i:s', CURRENT_TIME),
-                'name' => $this->escape($blog_category_name),
-                'description' => $this->escape($blog_category_description),
-                'meta_title' => $this->escape($blog_category_meta_title),
-                'meta_description' => $this->escape($blog_category_meta_description),
-                'meta_keyword' => $this->escape($blog_category_meta_keyword)
+                'appid'             => (int)$appid,
+                'image'             => $image,
+                'parent_id'         => (int)$parent_id,
+                'sort_order'        => (int)$sort_order,
+                'status'            => (int)$status,
+                'date_modified'     => date('Y-m-d H:i:s', CURRENT_TIME),
+                'date_added'        => date('Y-m-d H:i:s', CURRENT_TIME),
+                'name'              => $this->escape($blog_category_name),
+                'description'       => $this->escape($blog_category_description),
+                'meta_title'        => $this->escape($blog_category_meta_title),
+                'meta_description'  => $this->escape($blog_category_meta_description),
+                'meta_keyword'      => $this->escape($blog_category_meta_keyword)
             ]);
 
             if (!$blog_category_id) {
@@ -116,8 +116,8 @@ class BlogModel extends BaseModel
             $level = 0;
             $rows = $db->select('mcc_blog_category_path', [
                 'AND' => [
-                    'appid' => (int)$appid,
-                    'blog_category_id' => (int)$parent_id
+                    'appid'             => (int)$appid,
+                    'blog_category_id'  => (int)$parent_id
                 ],
                 'ORDER' => [
                     'level' => 'ASC'
@@ -125,31 +125,68 @@ class BlogModel extends BaseModel
             ]);
             foreach ($rows as $result) {
                 $db->insert('mcc_blog_category_path', [
-                    'appid' => (int)$appid,
-                    'blog_category_id' => (int)$blog_category_id,
-                    'path_id' => (int)$result['path_id'],
-                    'level' => (int)$level,
+                    'appid'             => (int)$appid,
+                    'blog_category_id'  => (int)$blog_category_id,
+                    'path_id'           => (int)$result['path_id'],
+                    'level'             => (int)$level,
                 ]);
                 $level++;
             }
             $db->insert('mcc_blog_category_path', [
-                'appid' => (int)$appid,
-                'blog_category_id' => (int)$blog_category_id,
-                'path_id' => (int)$blog_category_id,
-                'level' => (int)$level,
+                'appid'             => (int)$appid,
+                'blog_category_id'  => (int)$blog_category_id,
+                'path_id'           => (int)$blog_category_id,
+                'level'             => (int)$level,
             ]);
 
             if (!empty($blog_category_store)) {
                 foreach ($blog_category_store as $store_id) {
                     $db->insert('mcc_blog_category_to_store', [
-                        'appid' => (int)$appid,
-                        'blog_category_id' => (int)$blog_category_id,
-                        'store_id' => (int)$store_id,
+                        'appid'             => (int)$appid,
+                        'blog_category_id'  => (int)$blog_category_id,
+                        'store_id'          => (int)$store_id,
                     ]);
                 }
             }
             return true;
         });
         return $blog_category_id;
+    }
+
+
+    /**
+     * 获得分类信息
+     * @param $appid
+     * @param $blog_category_id
+     * @return mixed
+     */
+    public function getCategory($appid, $blog_category_id)
+    {
+        $sql = "SELECT DISTINCT *, 
+                  (SELECT GROUP_CONCAT(c.name ORDER BY level SEPARATOR '&nbsp;&nbsp;&gt;&nbsp;&nbsp;') 
+                      FROM mcc_blog_category_path cp 
+                      WHERE cp.blog_category_id = c.blog_category_id AND cp.appid = " . (int)$appid . "
+                      GROUP BY cp.blog_category_id) AS path
+                FROM mcc_blog_category c 
+                LEFT JOIN mcc_blog_category c2 ON (c.blog_category_id = c2.blog_category_id AND c2.appid = " . (int)$appid . ") 
+                WHERE c.blog_category_id = '" . (int)$blog_category_id . "' AND c.appid = " . $appid;
+        $info = $this->db->query($sql)->fetch(\PDO::FETCH_ASSOC);
+        return $info;
+    }
+
+    /**
+     * 博客分类所属商店
+     * @param $category_id
+     * @return mixed
+     */
+    public function getCategoryToStore($appid, $blog_category_id)
+    {
+        $list = $this->db->select('mcc_blog_category_to_store', '*', [
+            'AND'   => [
+                'appid'             => (int)$appid,
+                'blog_category_id'  => (int)$blog_category_id
+            ]
+        ]);
+        return array_column($list, 'store_id');
     }
 }

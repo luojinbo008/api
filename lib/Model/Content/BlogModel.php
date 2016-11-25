@@ -262,12 +262,12 @@ class BlogModel extends BaseModel
 
                     $level = 0;
                     foreach ($path as $path_id) {
-                        $db->replace('mcc_blog_category_path', [
-                            'blog_category_id'  => (int)$blog_category_path['blog_category_id'],
-                            'path_id'           => (int)$path_id,
-                            'level'             => (int)$level,
-                            'appid'             => (int)$appid
-                        ]);
+                        $sql = "REPLACE INTO `mcc_blog_category_path` SET 
+                        appid = '" . (int)$appid . "', 
+                        blog_category_id = '" . (int)$blog_category_path['blog_category_id'] . "', 
+                        `path_id` = '" . (int)$path_id . "', 
+                        level = '" . (int)$level . "'";
+                        $db->exec($sql);
                         $level++;
                     }
                 }
@@ -298,13 +298,12 @@ class BlogModel extends BaseModel
                     ]);
                     $level++;
                 }
-
-                $db->replace('mcc_blog_category_path', [
-                    'blog_category_id'  => (int)$blog_category_id,
-                    'path_id'           => (int)$blog_category_id,
-                    'level'             => (int)$level,
-                    'appid'             => (int)$appid
-                ]);
+                $sql = "REPLACE INTO `mcc_blog_category_path` SET 
+                        appid = '" . (int)$appid . "', 
+                        blog_category_id = '" . (int)$blog_category_id . "', 
+                        `path_id` = '" . (int)$blog_category_id . "', 
+                        level = '" . (int)$level . "'";
+                $db->exec($sql);
             }
             $db->delete('mcc_blog_category_to_store', [
                 'AND'   => [
@@ -314,7 +313,6 @@ class BlogModel extends BaseModel
             ]);
 
             if (!empty($blog_category_store)) {
-
                 foreach ($blog_category_store as $store_id) {
                     $db->insert('mcc_blog_category_to_store', [
                         'appid'             => (int)$appid,

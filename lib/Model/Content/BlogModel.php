@@ -385,7 +385,7 @@ class BlogModel extends BaseModel
             $db->delete('mcc_blog_category_path', [
                 'AND'   => [
                     'appid'             => (int)$appid,
-                    'blog_category_id'  => (int)$blog_category_ids
+                    'blog_category_id'  => $blog_category_ids
                 ]
             ]);
             $rows = $db->select('mcc_blog_category_path', '*', [
@@ -400,13 +400,13 @@ class BlogModel extends BaseModel
             $db->delete('mcc_blog_category', [
                 'AND'   => [
                     'appid'             => (int)$appid,
-                    'blog_category_id'  => (int)$blog_category_ids
+                    'blog_category_id'  => $blog_category_ids
                 ]
             ]);
             $db->delete('mcc_blog_category_to_store', [
                 'AND'   => [
                     'appid'             => (int)$appid,
-                    'blog_category_id'  => (int)$blog_category_ids
+                    'blog_category_id'  => $blog_category_ids
                 ]
             ]);
         });

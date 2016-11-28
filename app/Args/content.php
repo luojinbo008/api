@@ -59,4 +59,17 @@ return [
             'status'                            => 'int',
         ],
     ],
+    'repairBlogCategory.json'  => [
+        'name' => "重构博客分类",
+        'type' => 'POST',
+        'args' => [
+        ],
+    ],
+    'deleteBlogCategory.json'  => [
+        'name' => "删除博客分类",
+        'type' => 'POST',
+        'args' => [
+            'blog_category_ids'      => 'array|empty'
+        ],
+    ],
 ];

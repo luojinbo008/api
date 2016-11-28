@@ -325,4 +325,90 @@ class BlogModel extends BaseModel
         });
         return true;
     }
+
+    /**
+     * 重构分类
+     * @param $appid
+     * @param int $parent_id
+     */
+    public function repairCategories($appid, $parent_id = 0) {
+        $rows = $this->db->select('mcc_blog_category', '*', [
+            'AND'   => [
+                'appid'     => (int)$appid,
+                'parent_id' => (int)$parent_id
+            ]
+        ]);
+        foreach ($rows as $blog_category) {
+            $this->db->delete('mcc_blog_category_path', [
+                'AND'   => [
+                    'appid'             => (int)$appid,
+                    'blog_category_id'  => (int)$blog_category['blog_category_id']
+                ]
+            ]);
+            $level = 0;
+            $rows2 = $this->db->select('mcc_blog_category_path', '*', [
+                'AND'   => [
+                    'appid'             => (int)$appid,
+                    'blog_category_id'  => (int)$parent_id
+                ],
+                'ORDER' => [
+                    'level' => 'ASC'
+                ]
+            ]);
+            foreach ($rows2 as $result) {
+                $this->db->insert('mcc_blog_category_path', [
+                    'appid'             => (int)$appid,
+                    'blog_category_id'  => (int)$blog_category['blog_category_id'],
+                    'path_id'           => (int)$result['path_id'],
+                    'level'             => (int)$level,
+                ]);
+                $level++;
+            }
+            $sql = "REPLACE INTO `mcc_blog_category_path` SET blog_category_id = '" . (int)$blog_category['blog_category_id']
+                . "', `path_id` = '" . (int)$blog_category['blog_category_id']
+                . "', level = '" . (int)$level
+                . "', appid = '" . (int)$appid . "'";
+            $this->db->exec($sql);
+            $this->repairCategories($appid, $blog_category['blog_category_id']);
+        }
+    }
+
+    /**
+     * 删除分类
+     * @param $appid
+     * @param $blog_category_id
+     */
+    public function deleteCategory($appid, $blog_category_ids)
+    {
+        $db = $this->db;
+        $db->action(function($db) use ($appid, $blog_category_ids) {
+            $db->delete('mcc_blog_category_path', [
+                'AND'   => [
+                    'appid'             => (int)$appid,
+                    'blog_category_id'  => (int)$blog_category_ids
+                ]
+            ]);
+            $rows = $db->select('mcc_blog_category_path', '*', [
+                'AND'   => [
+                    'path_id'   => $blog_category_ids,
+                    'appid'     => (int)$appid
+                ]
+            ]);
+            foreach ($rows as $result) {
+                $this->deleteCategory($appid, $result['blog_category_id']);
+            }
+            $db->delete('mcc_blog_category', [
+                'AND'   => [
+                    'appid'             => (int)$appid,
+                    'blog_category_id'  => (int)$blog_category_ids
+                ]
+            ]);
+            $db->delete('mcc_blog_category_to_store', [
+                'AND'   => [
+                    'appid'             => (int)$appid,
+                    'blog_category_id'  => (int)$blog_category_ids
+                ]
+            ]);
+        });
+    }
 }

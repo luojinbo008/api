@@ -164,4 +164,40 @@ class ContentController extends BaseController
             "data"      => []
         ]);
     }
+
+    /**
+     * 重构博客结构
+     * @param Request $request
+     * @param Response $response
+     * @return mixed
+     */
+    public function repairBlogCategory(Request $request, Response $response)
+    {
+        $model = new BlogModel();
+        $model->repairCategories($this->appid);
+        return $response->withJson([
+            "code"      => 0,
+            "message"   => "重构博客分类结构成功！",
+            "data"      => []
+        ]);
+    }
+
+    /**
+     * 删除博客分类
+     * @param Request $request
+     * @param Response $response
+     * @return mixed
+     */
+    public function deleteBlogCategory(Request $request, Response $response)
+    {
+        $data = $request->getQueryParams();
+        $blog_category_ids = $data['blog_category_ids'];
+        $model = new BlogModel();
+        $model->deleteCategory($this->appid, $blog_category_ids);
+        return $response->withJson([
+            "code"      => 0,
+            "message"   => "删除博客分类成功！",
+            "data"      => []
+        ]);
+    }
 }

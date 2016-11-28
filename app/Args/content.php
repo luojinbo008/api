@@ -60,8 +60,8 @@ return [
         ],
     ],
     'repairBlogCategory.json'  => [
-        'name' => "重构博客分类",
-        'type' => 'POST',
+        'name' => "重构博客分类树状结构",
+        'type' => 'GET',
         'args' => [
         ],
     ],

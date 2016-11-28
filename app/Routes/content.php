@@ -10,5 +10,5 @@ $app->get('/content/getBlogCategoryList.json', $controller . ':getBlogCategoryLi
 $app->post('/content/addBlogCategory.json', $controller . ':addBlogCategory');
 $app->get('/content/getBlogCategory.json', $controller . ':getBlogCategory');
 $app->post('/content/editBlogCategory.json', $controller . ':editBlogCategory');
-$app->post('/content/repairBlogCategory.json', $controller . ':repairBlogCategory');
+$app->get('/content/repairBlogCategory.json', $controller . ':repairBlogCategory');
 $app->post('/content/deleteBlogCategory.json', $controller . ':deleteBlogCategory');

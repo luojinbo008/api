@@ -67,7 +67,7 @@ return [
     ],
     'deleteBlogCategory.json'  => [
         'name' => "删除博客分类",
-        'type' => 'POST',
+        'type' => 'GET',
         'args' => [
             'blog_category_ids'      => 'array|empty'
         ],

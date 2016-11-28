@@ -11,4 +11,4 @@ $app->post('/content/addBlogCategory.json', $controller . ':addBlogCategory');
 $app->get('/content/getBlogCategory.json', $controller . ':getBlogCategory');
 $app->post('/content/editBlogCategory.json', $controller . ':editBlogCategory');
 $app->get('/content/repairBlogCategory.json', $controller . ':repairBlogCategory');
-$app->post('/content/deleteBlogCategory.json', $controller . ':deleteBlogCategory');
+$app->get('/content/deleteBlogCategory.json', $controller . ':deleteBlogCategory');

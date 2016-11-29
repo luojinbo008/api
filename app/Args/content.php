@@ -72,4 +72,16 @@ return [
             'blog_category_ids'      => 'array|empty'
         ],
     ],
+    'getBlogList.json'  => [
+        'name' => "获得博客列表",
+        'type' => 'GET',
+        'args' => [
+            'filter_title'	  => 'string',
+            'filter_status'   => 'int',
+            'sort'            => 'string',
+            'order'           => 'int',
+            'start'           => 'int',
+            'limit'           => 'int'
+        ],
+    ]
 ];

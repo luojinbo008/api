@@ -411,4 +411,61 @@ class BlogModel extends BaseModel
             ]);
         });
     }
+
+    /**
+     * 获得博客列表
+     * @param $appid
+     * @param $filter_status
+     * @param $filter_title
+     * @param $order
+     * @param $sort
+     * @param $start
+     * @param $limit
+     * @return array
+     */
+    public function getBlogList($appid, $filter_status, $filter_title, $order, $sort, $start, $limit)
+    {
+        $where['AND'] = [
+            'appid' => (int)$appid
+        ];
+        if (!empty($filter_title)) {
+            $where['AND']['title[~]'] =  "%" . $this->escape($filter_title) . "%";
+        }
+        if (!is_null($filter_status)) {
+            $where['AND']['status'] = (int)$filter_status;
+        }
+        $count = $this->db->count('mcc_blog', $where);
+        if (!$count) {
+            return ['count' => 0, 'list' => $where];
+        }
+        $where['GROUP'] = "blog_id";
+        $sort_data = [
+            'title',
+            'status',
+            'sort_order'
+        ];
+
+        if (!empty($order) && ($order == 'DESC')) {
+            $orderBy = "DESC";
+        } else {
+            $orderBy = "ASC";
+        }
+
+        if (!empty($sort) && in_array($sort, $sort_data)) {
+            $where['ORDER'][$sort] = $orderBy;
+        } else {
+            $where['ORDER']['title'] = 'ASC';
+        }
+        if (!empty($start) || !empty($limit)) {
+            if ($start < 0) {
+                $start = 0;
+            }
+            if ($limit < 1) {
+                $limit = 20;
+            }
+            $where['LIMIT'] = [$start, $limit];
+        }
+        $blogList = $this->db->select('mcc_blog', '*', $where);
+        return ['count' => $count, 'list' => $blogList];
+    }
 }

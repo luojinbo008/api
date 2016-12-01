@@ -439,7 +439,7 @@ class BlogModel extends BaseModel
         }
         $count = $this->db->count('mcc_blog', $where);
         if (!$count) {
-            return ['count' => 0, 'list' => $where];
+            return ['count' => 0, 'list' => []];
         }
         $where['GROUP'] = "blog_id";
         $sort_data = [

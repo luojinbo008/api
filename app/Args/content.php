@@ -79,7 +79,7 @@ return [
             'filter_title'	  => 'string',
             'filter_status'   => 'int',
             'sort'            => 'string',
-            'order'           => 'int',
+            'order'           => 'string',
             'start'           => 'int',
             'limit'           => 'int'
         ],

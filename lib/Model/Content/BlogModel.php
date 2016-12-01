@@ -471,4 +471,10 @@ class BlogModel extends BaseModel
         $blogList = $this->db->select('mcc_blog', '*', $where);
         return ['count' => $count, 'list' => $blogList];
     }
+
+    public function addBlog($appid, $blog_category_id, $title, $meta_title, $brief, $description, $meta_keyword,
+                            $meta_description, $user_id, $hits, $image, $video_code, $featured, $created, $status, $sort_order, $tag)
+    {
+
+    }
 }

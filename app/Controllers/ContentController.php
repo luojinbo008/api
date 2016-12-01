@@ -224,4 +224,29 @@ class ContentController extends BaseController
             "data"      => $info
         ]);
     }
+
+    public function addBlog(Request $request, Response $response)
+    {
+        $query = $request->getParsedBody();
+        $blog_category_id = isset($query['blog_category_id']) ? $query['blog_category_id'] : [];
+        $created = isset($query['created']) ? $query['created'] : '0000-00-00';
+        $status = isset($query['status']) ? (int)$query['status'] : 0;
+        $user_id = (int)$query['user_id'];
+        $hits = isset($query['hits']) ? (int)$query['hits'] : 0;
+        $image = isset($query['image']) ? $query['image'] : '';
+        $video_code = isset($query['video_code']) ? $query['video_code'] : '';
+        $featured = isset($query['featured']) ? (int)$query['featured'] : 0;
+        $sort_order = isset($query['sort_order']) ? (int)$query['sort_order'] : 0;
+        $title = isset($query['title']) ? $query['title'] : '';
+        $brief = isset($query['brief']) ? $query['brief'] : '';
+        $description = isset($query['description']) ? $query['description'] : '';
+        $meta_title = isset($query['meta_title']) ? $query['meta_title'] : '';
+        $meta_keyword = isset($query['meta_keyword']) ? $query['meta_keyword'] : '';
+        $meta_description = isset($query['meta_description']) ? $query['meta_description'] : '';
+        $tag = isset($query['tag']) ? $query['tag'] : '';
+
+        $model = new BlogModel();
+
+
+    }
 }

@@ -84,5 +84,27 @@ return [
             'start'           => 'int',
             'limit'           => 'int'
         ],
+    ],
+    'addBlog.json'  => [
+        'name' => "新增博客",
+        'type' => 'POST',
+        'args' => [
+            'blog_category_id'  => 'array',
+            'created'           => 'string',
+            'status'            => 'int',
+            'user_id'           => 'int|empty',
+            'hits'              => 'int',
+            'image'             => 'string',
+            'video_code'        => 'string',
+            'featured'          => 'int',
+            'sort_order'        => 'int',
+            'title'             => 'string|empty',
+            'brief'             => 'string',
+            'description'       => 'string',
+            'meta_title'        => 'string',
+            'meta_keyword'      => 'string',
+            'meta_description'  => 'string',
+            'tag'               => 'string',
+        ],
     ]
 ];

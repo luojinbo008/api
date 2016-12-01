@@ -209,6 +209,7 @@ class ContentController extends BaseController
     public function getBlogList(Request $request, Response $response)
     {
         $data = $request->getQueryParams();
+        $filter_blog_ids = isset($data['filter_blog_ids']) ? $data['filter_blog_ids'] : [];
         $filter_title = isset($data['filter_title']) ? $data['filter_title'] : '';
         $start = isset($data['start']) ? (int)$data['start'] : 0;
         $limit = isset($data['limit']) ? (int)$data['limit'] : 0;
@@ -216,7 +217,7 @@ class ContentController extends BaseController
         $sort = isset($data['sort']) ? $data['sort'] : '';
         $filter_status = isset($data['filter_status']) ? (int)$data['filter_status'] : null;
         $model = new BlogModel();
-        $info = $model->getBlogList($this->appid, $filter_status, $filter_title, $order, $sort, $start, $limit);
+        $info = $model->getBlogList($this->appid, $filter_blog_ids, $filter_status, $filter_title, $order, $sort, $start, $limit);
         return $response->withJson([
             "code"      => 0,
             "message"   => "获得博客列表成功！",

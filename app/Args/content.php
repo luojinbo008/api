@@ -78,6 +78,7 @@ return [
         'args' => [
             'filter_title'	  => 'string',
             'filter_status'   => 'int',
+            'filter_blog_ids' => 'array',
             'sort'            => 'string',
             'order'           => 'string',
             'start'           => 'int',

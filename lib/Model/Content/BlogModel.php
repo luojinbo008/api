@@ -423,13 +423,16 @@ class BlogModel extends BaseModel
      * @param $limit
      * @return array
      */
-    public function getBlogList($appid, $filter_status, $filter_title, $order, $sort, $start, $limit)
+    public function getBlogList($appid, $filter_blog_ids, $filter_status, $filter_title, $order, $sort, $start, $limit)
     {
         $where['AND'] = [
             'appid' => (int)$appid
         ];
         if (!empty($filter_title)) {
             $where['AND']['title[~]'] =  "%" . $this->escape($filter_title) . "%";
+        }
+        if (!empty($filter_blog_ids)) {
+            $where['AND']['blog_id'] = $filter_blog_ids;
         }
         if (!is_null($filter_status)) {
             $where['AND']['status'] = (int)$filter_status;

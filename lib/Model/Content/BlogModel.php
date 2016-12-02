@@ -498,64 +498,63 @@ class BlogModel extends BaseModel
                 'user_id'           => (int)$user_id,
                 'status'            => (int)$status,
                 'sort_order'        => (int)$sort_order,
-                'img'               => $image,
+                'image'             => $image,
                 'date_added'        => date('Y-m-d H:i:s', CURRENT_TIME),
                 'date_modified'     => date('Y-m-d H:i:s', CURRENT_TIME),
             ]);
+            if (!$blog_id) {
+                return false;
+            }
+            if (!empty($blog_store)) {
+                foreach ($blog_store as $store_id) {
+                    $db->insert('mcc_blog_to_store', [
+                        'appid' => $appid,
+                        'store_id' => $store_id,
+                        'blog_id' => $blog_id,
+                    ]);
+                }
+            }
+            if (!empty($blog_blog_category)) {
+                foreach ($blog_blog_category as $blog_category_id) {
+                    $db->insert('mcc_blog_to_blog_category', [
+                        'appid' => $appid,
+                        'blog_id' => $blog_id,
+                        'blog_category_id' => $blog_category_id,
+                    ]);
+                }
+            }
+            if (!empty($product_related)) {
+                $db->delete('mcc_blog_product', [
+                    'AND' => [
+                        'appid' => (int)$appid,
+                        'blog_id' => (int)$blog_id
+                    ]
+                ]);
+                foreach ($product_related as $related_id) {
+                    $db->insert('mcc_blog_product', [
+                        'appid' => (int)$appid,
+                        'blog_id' => (int)$blog_id,
+                        'related_id' => (int)$related_id,
+                    ]);
+                }
+            }
+            if (!empty($blog_related)) {
+                $db->delete('mcc_blog_related', [
+                    'AND' => [
+                        'appid' => (int)$appid,
+                        'blog_id' => (int)$blog_id
+                    ]
+                ]);
+                foreach ($blog_related as $related_id) {
+                    $db->insert('mcc_blog_related', [
+                        'appid' => (int)$appid,
+                        'blog_id' => (int)$blog_id,
+                        'related_id' => (int)$related_id,
+                    ]);
+                }
+                return true;
+            }
         });
-        if (!$blog_id) {
-            return false;
-        }
-        if (!empty($blog_store)) {
-            foreach ($blog_store as $store_id) {
-                $db->insert('mcc_blog_to_store', [
-                    'appid'     => $appid,
-                    'store_id'  => $store_id,
-                    'blog_id'   => $blog_id,
-                ]);
-            }
-        }
-        if (!empty($blog_blog_category)) {
-            foreach ($blog_blog_category as $blog_category_id) {
-                $db->insert('mcc_blog_to_blog_category', [
-                    'appid'             => $appid,
-                    'blog_id'           => $blog_id,
-                    'blog_category_id'  => $blog_category_id,
-                ]);
-            }
-        }
-        if (!empty($product_related)) {
-            $db->delete('mcc_blog_product', [
-                'AND'   => [
-                    'appid'     => (int)$appid,
-                    'blog_id'   => (int)$blog_id
-                ]
-            ]);
-            foreach ($product_related as $related_id) {
-                $db->insert('mcc_blog_product', [
-                    'appid'         => (int)$appid,
-                    'blog_id'       => (int)$blog_id,
-                    'related_id'    => (int)$related_id,
-                ]);
-            }
-
-        }
-        if (!empty($blog_related)) {
-            $db->delete('mcc_blog_related', [
-                'AND'   => [
-                    'appid'     => (int)$appid,
-                    'blog_id'   => (int)$blog_id
-                ]
-            ]);
-            foreach ($blog_related as $related_id) {
-                $db->insert('mcc_blog_related', [
-                    'appid'         => (int)$appid,
-                    'blog_id'       => (int)$blog_id,
-                    'related_id'    => (int)$related_id,
-                ]);
-            }
-            return true;
-        }
         return true;
     }
 }

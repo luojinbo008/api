@@ -225,10 +225,15 @@ class ContentController extends BaseController
         ]);
     }
 
+    /**
+     * 新增博客
+     * @param Request $request
+     * @param Response $response
+     * @return mixed
+     */
     public function addBlog(Request $request, Response $response)
     {
         $query = $request->getParsedBody();
-        $blog_category_id = isset($query['blog_category_id']) ? $query['blog_category_id'] : [];
         $created = isset($query['created']) ? $query['created'] : '0000-00-00';
         $status = isset($query['status']) ? (int)$query['status'] : 0;
         $user_id = (int)$query['user_id'];
@@ -245,8 +250,25 @@ class ContentController extends BaseController
         $meta_description = isset($query['meta_description']) ? $query['meta_description'] : '';
         $tag = isset($query['tag']) ? $query['tag'] : '';
 
+        $blog_store = isset($query['blog_store']) ? $query['blog_store'] : [];
+        $blog_blog_category = isset($query['blog_blog_category']) ? $query['blog_blog_category'] : [];
+        $product_related = isset($query['product_related']) ? $query['product_related'] : [];
+        $blog_related = isset($query['blog_related']) ? $query['blog_related'] : [];
         $model = new BlogModel();
-
-
+        $status = $model->addBlog($this->appid, $title, $meta_title, $brief, $description, $meta_keyword, $meta_description,
+            $user_id, $hits, $image, $video_code, $featured, $created, $status, $sort_order, $tag, $blog_store,
+            $blog_blog_category, $product_related, $blog_related);
+        if (!$status) {
+            return $response->withJson([
+                "code"      => 1,
+                "message"   => "新增博客失败！",
+                "data"      => []
+            ]);
+        }
+        return $response->withJson([
+            "code"      => 0,
+            "message"   => "新增博客成功！",
+            "data"      => []
+        ]);
     }
 }

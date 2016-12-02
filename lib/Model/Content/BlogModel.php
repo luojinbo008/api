@@ -472,9 +472,90 @@ class BlogModel extends BaseModel
         return ['count' => $count, 'list' => $blogList];
     }
 
-    public function addBlog($appid, $blog_category_id, $title, $meta_title, $brief, $description, $meta_keyword,
-                            $meta_description, $user_id, $hits, $image, $video_code, $featured, $created, $status, $sort_order, $tag)
-    {
 
+    public function addBlog($appid, $title, $meta_title, $brief, $description, $meta_keyword, $meta_description,
+                $user_id, $hits, $image, $video_code, $featured, $created, $status, $sort_order, $tag, $blog_store = [],
+                $blog_blog_category = [], $product_related = [], $blog_related = [])
+    {
+        $db = $this->db;
+        $blog_id = 0;
+        $db->action(function($db) use ($appid, $title, $meta_title, $brief, $description, $meta_keyword, $meta_description,
+            $user_id, $hits, $image, $video_code, $featured, $created, $status, $sort_order, $tag, $blog_store,
+            $blog_blog_category, $blog_related, &$blog_id) {
+            $blog_id = $db->insert('mcc_blog', [
+                'appid'             => (int)$appid,
+                'title'             => $title,
+                'meta_title'        => $meta_title,
+                'meta_description'  => $meta_description,
+                'meta_keyword'      => $meta_keyword,
+                'tag'               => $tag,
+                'brief'             => (int)$brief,
+                'description'       => $description,
+                'featured'          => $featured,
+                'hits'              => (int)$hits,
+                'created'           => $created,
+                'video_code'        => $video_code,
+                'user_id'           => (int)$user_id,
+                'status'            => (int)$status,
+                'sort_order'        => (int)$sort_order,
+                'img'               => $image,
+                'date_added'        => date('Y-m-d H:i:s', CURRENT_TIME),
+                'date_modified'     => date('Y-m-d H:i:s', CURRENT_TIME),
+            ]);
+        });
+        if (!$blog_id) {
+            return false;
+        }
+        if (!empty($blog_store)) {
+            foreach ($blog_store as $store_id) {
+                $db->insert('mcc_blog_to_store', [
+                    'appid'     => $appid,
+                    'store_id'  => $store_id,
+                    'blog_id'   => $blog_id,
+                ]);
+            }
+        }
+        if (!empty($blog_blog_category)) {
+            foreach ($blog_blog_category as $blog_category_id) {
+                $db->insert('mcc_blog_to_blog_category', [
+                    'appid'             => $appid,
+                    'blog_id'           => $blog_id,
+                    'blog_category_id'  => $blog_category_id,
+                ]);
+            }
+        }
+        if (!empty($product_related)) {
+            $db->delete('mcc_blog_product', [
+                'AND'   => [
+                    'appid'     => (int)$appid,
+                    'blog_id'   => (int)$blog_id
+                ]
+            ]);
+            foreach ($product_related as $related_id) {
+                $db->insert('mcc_blog_product', [
+                    'appid'         => (int)$appid,
+                    'blog_id'       => (int)$blog_id,
+                    'related_id'    => (int)$related_id,
+                ]);
+            }
+
+        }
+        if (!empty($blog_related)) {
+            $db->delete('mcc_blog_related', [
+                'AND'   => [
+                    'appid'     => (int)$appid,
+                    'blog_id'   => (int)$blog_id
+                ]
+            ]);
+            foreach ($blog_related as $related_id) {
+                $db->insert('mcc_blog_related', [
+                    'appid'         => (int)$appid,
+                    'blog_id'       => (int)$blog_id,
+                    'related_id'    => (int)$related_id,
+                ]);
+            }
+            return true;
+        }
+        return true;
     }
 }

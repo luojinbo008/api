@@ -109,5 +109,12 @@ return [
             'product_related'       => 'array',
             'blog_related'          => 'array',
         ],
-    ]
+    ],
+    'deleteBlog.json'  => [
+        'name' => "删除博客",
+        'type' => 'GET',
+        'args' => [
+            'blog_ids'      => 'array|empty'
+        ],
+    ],
 ];

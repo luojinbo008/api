@@ -557,4 +557,14 @@ class BlogModel extends BaseModel
         });
         return true;
     }
+
+    /**
+     * 删除博客
+     * @param $appid
+     * @param $blog_ids
+     */
+    public function deleteBlog($appid, $blog_ids)
+    {
+
+    }
 }

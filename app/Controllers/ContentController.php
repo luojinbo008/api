@@ -271,4 +271,23 @@ class ContentController extends BaseController
             "data"      => []
         ]);
     }
+
+    /**
+     * 删除博客
+     * @param Request $request
+     * @param Response $response
+     * @return mixed
+     */
+    public function deleteBlog(Request $request, Response $response)
+    {
+        $data = $request->getQueryParams();
+        $blog_ids = $data['blog_ids'];
+        $model = new BlogModel();
+        $model->deleteBlog($this->appid, $blog_ids);
+        return $response->withJson([
+            "code"      => 0,
+            "message"   => "删除博客成功！",
+            "data"      => []
+        ]);
+    }
 }
